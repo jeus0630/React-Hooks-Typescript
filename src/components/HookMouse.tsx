@@ -19,7 +19,7 @@ const HookMouse: FunctionComponent<Props> = (props) => {
         window.addEventListener('mousemove', logMousePosition);
 
         return () => {
-
+            window.removeEventListener('mousemove', logMousePosition);
         };
     }, []);
 
