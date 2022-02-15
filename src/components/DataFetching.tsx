@@ -16,6 +16,7 @@ const DataFetching: FunctionComponent<Props> = (props) => {
 
     const [posts, setPosts] = useState<Posts[]>([]);
     const [search, setSearch] = useState('');
+    const [btnId, setBtnId] = useState('');
     const initialRef = useRef(false);
 
     useEffect(() => {
@@ -36,7 +37,7 @@ const DataFetching: FunctionComponent<Props> = (props) => {
 
     useEffect(() => {
         if(initialRef.current) {
-            fetch(`https://jsonplaceholder.typicode.com/posts/${search}`)
+            fetch(`https://jsonplaceholder.typicode.com/posts/${btnId}`)
                 .then(response => response.json())
                 .then(data => {
                     setPosts([
@@ -47,7 +48,7 @@ const DataFetching: FunctionComponent<Props> = (props) => {
         return () => {
 
         };
-    }, [search]);
+    }, [btnId]);
 
     const changeHandler = (e: ChangeEvent) => {
         initialRef.current = true;
@@ -56,9 +57,14 @@ const DataFetching: FunctionComponent<Props> = (props) => {
         setSearch(value);
     }
 
+    const clickHandler = () => {
+        setBtnId(search);
+    }
+
     return (
         <div>
             <input type="text" onChange={changeHandler}/>
+            <button onClick={clickHandler}>Fetch Post</button>
             <ul>
                 {
                     posts.map(data => <li key={data.id}><em>{data.title}</em></li>)
