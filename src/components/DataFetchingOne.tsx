@@ -61,7 +61,7 @@ const DataFetchingOne: FunctionComponent<Props> = (props) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/posts/1')
+        fetch('https://jsonplaceholder.typicode.com/postsss/1')
             .then(response=>{
                 if(!response.ok){
                     dispatch({type:'loading',payload: true});
@@ -72,10 +72,12 @@ const DataFetchingOne: FunctionComponent<Props> = (props) => {
                 return response.json();
             })
             .then(data=>{
-                console.log(state);
                 dispatch({type:'loading', payload : false});
-                dispatch({type:'post', payload: data});
-                dispatch({type:'error',payload : ''});
+
+                if(data){
+                    dispatch({type:'post', payload: data});
+                    dispatch({type:'error',payload : ''});
+                }
             })
         return () => {
 
