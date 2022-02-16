@@ -5,39 +5,43 @@ interface OwnProps {
 
 type Props = OwnProps;
 
+type PostType = {
+    userId: number;
+    id: number;
+    title: string;
+    body: string;
+}
+
 type StateType = {
     loading: boolean;
     error: string;
-    post: {
-        userId: number;
-        id: number;
-        title: string;
-        body: string;
-    }
+    post: PostType;
 }
 
-type ActionType = {type: 'loading', payload: boolean} | {type: 'error', payload: string} | {type: 'post', payload: StateType};
+type ActionType = {type:'FETCH_SUCCESS', payload: PostType} | {type:'FETCH_FAIL'};
 
 type Reducer = (state: StateType, action: ActionType) => StateType;
 
 const reducer: Reducer = (state, action) => {
     switch (action.type) {
-        case 'loading':
+        case 'FETCH_SUCCESS':
             return {
                 ...state,
-                loading: action.payload
-            }
-        case 'error':
-            return {
-                ...state,
-                error: action.payload
-            }
-        case 'post':
-            return {
-                ...state,
+                loading: false,
+                error: '',
                 post: {
                     ...state.post,
                     ...action.payload
+                }
+            }
+        case 'FETCH_FAIL':
+            return {
+                ...state,
+                loading: false,
+                error: 'Error',
+                post: {
+                    ...state,
+                    ...initialState.post
                 }
             }
         default :
@@ -61,23 +65,22 @@ const DataFetchingOne: FunctionComponent<Props> = (props) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
-        fetch('https://jsonplaceholder.typicode.com/postsss/1')
+        fetch('https://jsonplaceholder.typicode.com/posts/1')
             .then(response=>{
                 if(!response.ok){
-                    dispatch({type:'loading',payload: true});
-                    dispatch({type:'post', payload: initialState});
-                    dispatch({type:'error', payload: 'something went wrong!'});
+                    dispatch({type:'FETCH_FAIL'});
                     return;
                 }
                 return response.json();
             })
             .then(data=>{
-                dispatch({type:'loading', payload : false});
-
                 if(data){
-                    dispatch({type:'post', payload: data});
-                    dispatch({type:'error',payload : ''});
+                    dispatch({type:'FETCH_SUCCESS',payload:data});
                 }
+            })
+            .catch(err => {
+                console.log(err);
+                dispatch({type:'FETCH_FAIL'});
             })
         return () => {
 
